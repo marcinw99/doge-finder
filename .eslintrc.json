@@ -1,0 +1,31 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": ["@ridedott/eslint-config", "plugin:lit/recommended"],
+  "overrides": [
+    {
+      "files": "./src/**/*spec.ts",
+      "rules": {
+        "@typescript-eslint/no-magic-numbers": "off"
+      }
+    }
+  ],
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "project": "tsconfig.json",
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "immutable/no-mutation": "off",
+    "immutable/no-this": "off",
+    "unicorn/filename-case": [
+      "error",
+      {
+        "case": "kebabCase"
+      }
+    ]
+  }
+}

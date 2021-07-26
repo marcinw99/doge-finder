@@ -1,0 +1,71 @@
+{
+  "version": "1.0.0",
+  "description": "My webpack project",
+  "name": "my-webpack-project",
+  "scripts": {
+    "stylelint-check-conflicts": "stylelint-config-prettier-check",
+    "lint": "run-p lint:css lint:ts",
+    "lint:css": "stylelint 'src/**/*.css'",
+    "lint:css:fix": "stylelint --fix 'src/**/*.css'",
+    "lint:ts": "eslint --resolve-plugins-relative-to \"./node_modules/@ridedott/eslint-config\" \"**/*.ts\"",
+    "lint:ts:fix": "eslint --fix --resolve-plugins-relative-to \"./node_modules/@ridedott/eslint-config\" \"**/*.ts\"",
+    "format:check": "prettier --check \"**/*.{css,js,json,md,ts,tsx,yml,yaml}\"",
+    "format:fix": "prettier --write \"**/*.{css,js,json,md,ts,tsx,yml,yaml}\"",
+    "husky:lint-staged": "lint-staged",
+    "husky:pre-commit": "run-p husky:lint-staged",
+    "build": "webpack --mode=production --node-env=production",
+    "build:dev": "webpack --mode=development",
+    "build:prod": "webpack --mode=production --node-env=production",
+    "watch": "webpack --watch",
+    "serve": "webpack serve",
+    "types": "tsc --noEmit",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@ridedott/eslint-config": "^2.14.5",
+    "@types/jest": "^26.0.24",
+    "@typescript-eslint/eslint-plugin": "^4.28.5",
+    "css-loader": "^6.2.0",
+    "eslint": "^7.31.0",
+    "eslint-plugin-lit": "^1.5.1",
+    "html-webpack-plugin": "^5.3.2",
+    "husky": "^7.0.1",
+    "jest": "^27.0.6",
+    "lint-staged": "^11.1.1",
+    "npm-run-all": "^4.1.5",
+    "postcss-loader": "^6.1.1",
+    "postcss-preset-env": "^6.7.0",
+    "prettier": "^2.3.2",
+    "style-loader": "^3.2.1",
+    "stylelint": "^13.13.1",
+    "stylelint-config-prettier": "^8.0.2",
+    "stylelint-config-standard": "^22.0.0",
+    "stylelint-order": "^4.1.0",
+    "ts-jest": "^27.0.4",
+    "ts-lit-plugin": "^1.2.1",
+    "ts-loader": "^9.2.4",
+    "typescript": "^4.3.5",
+    "webpack": "^5.46.0",
+    "webpack-cli": "^4.7.2",
+    "webpack-dev-server": "^3.11.2"
+  },
+  "dependencies": {
+    "lit": "^2.0.0-rc.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run husky:pre-commit"
+    }
+  },
+  "lint-staged": {
+    "*.css": [
+      "stylelint --fix"
+    ],
+    "*.ts": [
+      "eslint --fix --resolve-plugins-relative-to \"./node_modules/@ridedott/eslint-config\""
+    ],
+    "*.{css,js,json,md,ts,yaml,yml}": [
+      "prettier --write"
+    ]
+  }
+}
