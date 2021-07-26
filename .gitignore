@@ -33,6 +33,9 @@ node_modules
 # MacOS-specific files
 .DS_Store
 
+# Editors files
+.idea
+
 # Build output
 lib
 
