@@ -2,8 +2,8 @@ import '@tensorflow/tfjs-backend-cpu';
 import '@tensorflow/tfjs-backend-webgl';
 
 import { load } from '@tensorflow-models/mobilenet';
-import { LitElement, html } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { LitElement, html, css } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 
 import './components/top-bar';
 import './components/upload-image';
@@ -23,11 +23,42 @@ export type Breeds = Array<IBreed>;
 
 @customElement('dog-finder')
 export class DogFinder extends LitElement {
+  static styles = css`
+    .container {
+      padding: 24px;
+      max-width: 1000px;
+      min-height: calc(100vh - 200px);
+      margin: 40px auto 0;
+      background: #fff;
+      box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.3);
+    }
+    
+    @media (min-width: 576px) {
+      .container {
+        max-width: 600px;
+      }
+    }
+    
+    @media (min-width: 768px) {
+      .container {
+        max-width: 700px
+      }
+    }
+    
+    @media (min-width: 992px) {
+      .container {
+        max-width: 800px;
+      }
+    }
+  `
   @property({ type: Boolean })
   isSearchingForBreed: boolean = false;
 
-  @property({ type: Array })
+  @state()
   breeds: Breeds = [];
+
+  @state()
+  breedNotFoundForGivenInput: boolean = false
 
   async searchForPossibleBreeds(image: HTMLImageElement): Promise<Breeds> {
     this.isSearchingForBreed = true;
@@ -59,20 +90,28 @@ export class DogFinder extends LitElement {
           if (response.ok) {
             return breed;
           }
-          return false
+          // breed not found (404)
+          return false;
         })
         .catch(() => {
+          // network error
           return false;
         });
       return promise;
     });
 
     Promise.all(validationRequests).then((result) => {
-      this.breeds = result.filter((item) => !!item) as IBreed[];
+      const foundBreeds = result.filter((item) => !!item) as IBreed[];
+      if (foundBreeds.length) {
+        this.breeds = foundBreeds
+      } else {
+        this.breedNotFoundForGivenInput = true
+      }
     });
   }
 
   async onNewImage(event: CustomEvent<NewImageEventDetail>) {
+    this.breedNotFoundForGivenInput = false
     const imgElement = event.detail;
     const possibleBreeds = await this.searchForPossibleBreeds(imgElement);
 
@@ -87,12 +126,21 @@ export class DogFinder extends LitElement {
   render() {
     return html`
       <top-bar></top-bar>
-      <h4>Upload a photo of a dog and we'll try to guess its breed</h4>
-      <upload-image @new-image=${this.onNewImage}></upload-image>
-      <dog-info></dog-info>
-      ${this.breeds.length
-        ? html`<dog-breeds-gallery .breeds=${this.breeds}></dog-breeds-gallery>`
-        : `no breeds shown`}
+      <div class="container">
+        <h3>Upload a photo of a dog, and we'll try to guess its breed</h3>
+        <div>
+            <upload-image @new-image=${this.onNewImage}></upload-image>
+            ${this.isSearchingForBreed ? html`<progress-spinner></progress-spinner>` : ''}
+            ${this.breedNotFoundForGivenInput ? html`<h3>We couldn't find any dog breeds for the provided input, try uploading a different image</h3>` : ''}
+        </div>
+        ${this.breeds.length
+          ? html`
+              <h3>Found him!</h3>
+              <dog-breeds-gallery
+              .breeds=${this.breeds}
+            ></dog-breeds-gallery>`
+          : ``}
+      </div>
     `;
   }
 }

@@ -9,7 +9,8 @@ export class TopBar extends LitElement {
       align-items: center;
       justify-content: flex-start;
       padding: 8px;
-      border-bottom: 1px solid black;
+      box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.3);
+      background: #fff;
     }
     
     .top-bar__app-name {

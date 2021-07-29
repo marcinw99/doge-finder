@@ -7,7 +7,17 @@ export type NewImageEventDetail = HTMLImageElement;
 
 @customElement('upload-image')
 export class UploadImage extends LitElement {
-  static styles = css``;
+  static styles = css`
+    .upload-image__container {
+      margin-top: 32px;
+      text-align: center;
+    }
+    
+    .upload-image__upload-image-img {
+      width: 300px;
+      margin-bottom: 16px;
+    }
+  `;
 
   @state()
   uploadedImage: string | ArrayBuffer | null = null;
@@ -45,19 +55,32 @@ export class UploadImage extends LitElement {
   render() {
     if (this.uploadedImage) {
       return html`
-        <image
-          src=${this.uploadedImage}
-          alt="your photo"
-          class="upload-image-img"
-        />
+        <div class="upload-image__container">
+        <div>
+          <image
+            src=${this.uploadedImage}
+            alt="your photo"
+            class="upload-image__upload-image-img"
+          />
+        </div>
+          Upload again: 
+          <input
+              class="upload-image__upload-image-input"
+              id="upload-image-input"
+              type="file"
+              @change=${this.onChange}
+          />
+        </div>
       `;
     }
 
-    return html`<input
-      class="upload-image"
-      id="upload-image-input"
-      type="file"
-      @change=${this.onChange}
-    /> `;
+    return html`<div class="upload-image__container">
+      <input
+        class="upload-image__upload-image=input"
+        id="upload-image-input"
+        type="file"
+        @change=${this.onChange}
+      />
+    </div>`;
   }
 }

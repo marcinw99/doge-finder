@@ -9,7 +9,14 @@ import { Breeds, IBreed } from '../dog-finder';
 @customElement('dog-breeds-gallery')
 export class DogBreedsGallery extends LitElement {
   static styles = css`
+    .dog-breeds-gallery {
+      margin-top: 24px;
+    }
+    
     .dog-breeds-gallery__breed-tab {
+      font-size: 1.3rem;
+      padding: 6px 12px;
+      margin-right: 4px
     }
 
     .dog-breeds-gallery__breed-tab--active {
@@ -19,6 +26,9 @@ export class DogBreedsGallery extends LitElement {
 
   @property({ type: Array })
   breeds: Breeds = [];
+
+  @state()
+  isFetching: boolean = false
 
   @state()
   selectedBreed?: IBreed;
@@ -41,6 +51,7 @@ export class DogBreedsGallery extends LitElement {
     if (!this.selectedBreed) {
       return
     }
+    this.isFetching = true
     fetch(`${config.DOGS_API}/breed/${this.selectedBreed.dogAPIParameter}/images/random/100`)
         .then(response => {
           if (response.ok) {
@@ -53,7 +64,10 @@ export class DogBreedsGallery extends LitElement {
           this.selectedBreedImagesURLs = data.message
         })
         .catch(() => {
-          // TOAST error when fetching images of dogs
+          // TODO error when fetching list of images
+        })
+        .finally(() => {
+            this.isFetching = false
         })
   }
 
@@ -72,11 +86,12 @@ export class DogBreedsGallery extends LitElement {
                 ?disabled=${isActive}
                 @click=${() => this.selectBreed(breed)}
               >
-                ${breed.name}
+                ${breed.name} (${breed.probability}%)
               </button>
             `;
           })}
         </div>
+        ${this.isFetching ? html`<progress-spinner></progress-spinner>` : ''}
         <infinite-scroll-gallery .urls=${this.selectedBreedImagesURLs}></infinite-scroll-gallery>
       </div>
     `;

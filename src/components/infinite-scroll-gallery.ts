@@ -5,14 +5,18 @@ import { customElement, property, state, queryAll } from 'lit/decorators.js';
 export class InfiniteScrollGallery extends LitElement {
   static styles = css`
     .gallery {
-      display: flex;
-      flex-wrap: wrap;
+      text-align: center;
     }
 
     .gallery__image {
-      height: auto;
-      width: 25%;
+      width: 45%;
       margin: 8px;
+    }
+
+    @media (min-width: 768px) {
+      .gallery__image {
+        width: 21%
+      }
     }
   `;
 
