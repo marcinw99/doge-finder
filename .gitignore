@@ -41,3 +41,6 @@ lib
 
 # webpack output folder
 dist
+
+# jest coverage report
+coverage
