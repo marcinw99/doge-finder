@@ -21,6 +21,10 @@
   "rules": {
     "immutable/no-mutation": "off",
     "immutable/no-this": "off",
+    "@typescript-eslint/member-ordering": "off",
+    "unicorn/expiring-todo-comments": "off",
+    "no-void": "off",
+    "import/no-duplicates": "off", // handled by @typescript-eslint config
     "unicorn/filename-case": [
       "error",
       {

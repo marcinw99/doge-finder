@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "description": "My webpack project",
-  "name": "my-webpack-project",
+  "description": "Simple app based on Web components",
+  "name": "doge-finder",
   "scripts": {
     "stylelint-check-conflicts": "stylelint-config-prettier-check",
     "lint": "run-p lint:css lint:ts",

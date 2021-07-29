@@ -1,9 +1,9 @@
-import { LitElement, html, css } from 'lit';
+import { css, html, LitElement, TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
 
 @customElement('progress-spinner')
 export class ProgressSpinner extends LitElement {
-  static styles = css`
+  public static styles = css`
     .loader {
       color: #e3b900;
       font-size: 20px;
@@ -93,7 +93,8 @@ export class ProgressSpinner extends LitElement {
     }
   `;
 
-  render() {
+  // eslint-disable-next-line class-methods-use-this
+  public render(): TemplateResult {
     return html` <div class="loader"></div> `;
   }
 }

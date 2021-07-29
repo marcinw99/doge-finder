@@ -1,9 +1,11 @@
-import { LitElement, css, html, PropertyValues } from 'lit';
-import { customElement, property, state, queryAll } from 'lit/decorators.js';
+import { css, html, LitElement, PropertyValues, TemplateResult } from 'lit';
+import { customElement, property, queryAll, state } from 'lit/decorators.js';
+
+import { config } from '../config';
 
 @customElement('infinite-scroll-gallery')
 export class InfiniteScrollGallery extends LitElement {
-  static styles = css`
+  public static styles = css`
     .gallery {
       text-align: center;
     }
@@ -15,66 +17,68 @@ export class InfiniteScrollGallery extends LitElement {
 
     @media (min-width: 768px) {
       .gallery__image {
-        width: 21%
+        width: 21%;
       }
     }
   `;
 
   @property({ type: Array })
-  urls: string[] = [];
+  public urls: string[] = [];
 
   @property({ type: Number })
-  pageSize: number = 15;
+  public pageSize: number = config.DEFAULT_GALLERY_PAGE_SIZE;
 
   @property({ type: Number })
-  nonLazyImagesAmount: number = 10;
+  public nonLazyImagesAmount: number = config.DEFAULT_NON_LAZY_IMAGES_COUNT;
 
   @state()
-  currentPage: number = 1;
+  private currentPage: number = 1;
 
   @queryAll('.gallery__image--lazy')
-  lazyImages?: HTMLImageElement[];
+  private readonly lazyImages?: HTMLImageElement[];
 
-  onScroll = () => {
+  private readonly onScroll = (): void => {
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
       this.currentPage++;
     }
   };
 
-  connectedCallback() {
+  public connectedCallback(): void {
     super.connectedCallback();
     window.addEventListener('scroll', this.onScroll);
   }
 
-  disconnectedCallback() {
+  public disconnectedCallback(): void {
     super.disconnectedCallback();
     window.removeEventListener('scroll', this.onScroll);
   }
 
-  applyLazyLoading() {
-    const imageObserver = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
+  private applyLazyLoading(): void {
+    const imageObserver = new IntersectionObserver((entries): void => {
+      for (const entry of entries) {
         if (entry.isIntersecting) {
           const image = entry.target as HTMLImageElement;
-          // make sure all images have their urls set also in data-src
+          // Make sure all images have their urls set also in data-src
+          // eslint-disable-next-line max-len
+          // eslint-disable-next-line unicorn/prevent-abbreviations, @typescript-eslint/no-non-null-assertion
           image.src = image.dataset.src!;
           image.classList.remove('gallery-image--lazy');
           imageObserver.unobserve(image);
         }
-      });
+      }
     });
 
-    this.lazyImages?.forEach(function (image) {
+    for (const image of this.lazyImages ?? []) {
       imageObserver.observe(image);
-    });
+    }
   }
 
-  updated(changedProperties: PropertyValues) {
+  public updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
     this.applyLazyLoading();
   }
 
-  render() {
+  public render(): TemplateResult {
     const currentlyDisplayedURLs = this.urls.slice(
       0,
       this.pageSize * this.currentPage,
@@ -82,8 +86,9 @@ export class InfiniteScrollGallery extends LitElement {
 
     return html`
       <div class="gallery">
-        ${currentlyDisplayedURLs.map((url, index) => {
+        ${currentlyDisplayedURLs.map((url, index): TemplateResult => {
           const isLazy = index >= this.nonLazyImagesAmount;
+
           return html`
             <img
               class="gallery__image ${isLazy ? 'gallery__image--lazy' : ''}"

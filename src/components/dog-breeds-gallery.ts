@@ -1,22 +1,22 @@
-import { LitElement, html, css } from 'lit';
+import './infinite-scroll-gallery';
+
+import { css, html, LitElement, TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 
-import './infinite-scroll-gallery'
-
-import config from '../config'
-import { Breeds, IBreed } from '../dog-finder';
+import { config } from '../config';
+import { Breed, Breeds, DogAPIListOfImagesResponse } from '../interfaces';
 
 @customElement('dog-breeds-gallery')
 export class DogBreedsGallery extends LitElement {
-  static styles = css`
+  public static styles = css`
     .dog-breeds-gallery {
       margin-top: 24px;
     }
-    
+
     .dog-breeds-gallery__breed-tab {
       font-size: 1.3rem;
       padding: 6px 12px;
-      margin-right: 4px
+      margin-right: 4px;
     }
 
     .dog-breeds-gallery__breed-tab--active {
@@ -25,58 +25,62 @@ export class DogBreedsGallery extends LitElement {
   `;
 
   @property({ type: Array })
-  breeds: Breeds = [];
+  public breeds: Breeds = [];
 
   @state()
-  isFetching: boolean = false
+  private isFetching: boolean = false;
 
   @state()
-  selectedBreed?: IBreed;
+  private selectedBreed: Breed | null = null;
 
   @state()
-  selectedBreedImagesURLs: string[] = []
+  private selectedBreedImagesURLs: string[] = [];
 
-  connectedCallback() {
-    super.connectedCallback()
+  public connectedCallback(): void {
+    super.connectedCallback();
     // TODO guard against multiple connectedCallback calls
-    this.selectBreed(this.breeds[0])
+    this.selectBreed(this.breeds[0]);
   }
 
-  selectBreed(breed: IBreed) {
+  private selectBreed(breed: Breed): void {
     this.selectedBreed = breed;
-    this.fetchImagesUrlsForSelectedBreed()
+    this.fetchAndSetImagesUrlsForSelectedBreed();
   }
 
-  fetchImagesUrlsForSelectedBreed () {
-    if (!this.selectedBreed) {
-      return
+  private fetchAndSetImagesUrlsForSelectedBreed(): void {
+    if (this.selectedBreed === null) {
+      return;
     }
-    this.isFetching = true
-    fetch(`${config.DOGS_API}/breed/${this.selectedBreed.dogAPIParameter}/images/random/100`)
-        .then(response => {
-          if (response.ok) {
-            return response.json()
-          } else {
-            throw new Error('Something went wrong')
-          }
-        })
-        .then(data => {
-          this.selectedBreedImagesURLs = data.message
-        })
-        .catch(() => {
-          // TODO error when fetching list of images
-        })
-        .finally(() => {
-            this.isFetching = false
-        })
+
+    this.isFetching = true;
+    fetch(
+      `${config.DOGS_API}/breed/${this.selectedBreed.dogAPIParameter}/images/random/100`,
+    )
+      .then(async (response): Promise<DogAPIListOfImagesResponse> => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Something went wrong');
+        }
+      })
+      .then((data): void => {
+        this.selectedBreedImagesURLs = data.message;
+      })
+      .catch((): void => {
+        // TODO error when fetching list of images
+      })
+      .finally((): void => {
+        this.isFetching = false;
+      });
   }
 
-  render() {
+  public render(): TemplateResult {
     return html`
       <div class="dog-breeds-gallery">
         <div class="dog-breeds-gallery__breed-tabs-container">
-          ${this.breeds.map((breed) => {
+          ${this.breeds.map((breed): TemplateResult => {
             const isActive = this.selectedBreed?.name === breed.name;
+
             return html`
               <button
                 type="button"
@@ -84,7 +88,9 @@ export class DogBreedsGallery extends LitElement {
                   ? 'dog-breeds-gallery__breed-tab--active'
                   : ''}"
                 ?disabled=${isActive}
-                @click=${() => this.selectBreed(breed)}
+                @click=${(): void => {
+                  this.selectBreed(breed);
+                }}
               >
                 ${breed.name} (${breed.probability}%)
               </button>
@@ -92,7 +98,9 @@ export class DogBreedsGallery extends LitElement {
           })}
         </div>
         ${this.isFetching ? html`<progress-spinner></progress-spinner>` : ''}
-        <infinite-scroll-gallery .urls=${this.selectedBreedImagesURLs}></infinite-scroll-gallery>
+        <infinite-scroll-gallery
+          .urls=${this.selectedBreedImagesURLs}
+        ></infinite-scroll-gallery>
       </div>
     `;
   }

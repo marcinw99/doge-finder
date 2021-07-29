@@ -1,17 +1,21 @@
-export function getFileUrl(file: File) {
-    return new Promise<string | null>((resolve, reject) => {
-        var fileReader = new FileReader();
+export const getFileUrl = async function (file: File): Promise<string | null> {
+  return new Promise((resolve, reject): void => {
+    const fileReader = new FileReader();
 
-        fileReader.onload = (event) => resolve(event.target?.result?.toString() || null);
-
-        fileReader.onerror = reject;
-
-        fileReader.readAsDataURL(file);
+    fileReader.addEventListener('load', (event): void => {
+      resolve(event.target?.result?.toString() ?? null);
     });
-}
 
-export function getDogAPIDogParameter (name: string) {
-    // example input from tensorflow: 'Golden retriever'
-    // input compatible with Dog API: 'retriever/golden'
-    return name.split(' ').reverse().join('/').toLowerCase()
-}
+    fileReader.addEventListener('error', reject);
+
+    fileReader.readAsDataURL(file);
+  });
+};
+
+export const getDogAPIDogParameter = function (name: string): string {
+  /*
+   * Example input from tensorflow: 'Golden retriever'
+   * Input compatible with Dog API: 'retriever/golden'
+   */
+  return name.split(' ').reverse().join('/').toLowerCase();
+};
