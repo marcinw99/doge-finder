@@ -50,6 +50,9 @@
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
+    "@tensorflow-models/mobilenet": "^2.1.0",
+    "@tensorflow/tfjs-backend-cpu": "^3.8.0",
+    "@tensorflow/tfjs-backend-webgl": "^3.8.0",
     "lit": "^2.0.0-rc.2"
   },
   "husky": {
