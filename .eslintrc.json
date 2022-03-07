@@ -17,7 +17,6 @@
     "project": "tsconfig.json",
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint"],
   "rules": {
     "immutable/no-mutation": "off",
     "immutable/no-this": "off",

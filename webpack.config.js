@@ -10,6 +10,7 @@ const config = {
     historyApiFallback: true,
     hot: true,
     overlay: true,
+    port: 8081
   },
   devtool: 'eval-cheap-module-source-map',
   entry: './src/index.ts',
